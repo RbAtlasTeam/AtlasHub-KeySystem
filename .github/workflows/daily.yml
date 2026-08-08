@@ -1,0 +1,29 @@
+name: Daily Key
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Key
+        run: |
+          KEY="ATLAS-$(openssl rand -hex 6 | tr '[:lower:]' '[:upper:]')"
+          echo "$KEY" > key.txt
+
+      - name: Save Key
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add key.txt
+          git commit -m "Update daily key" || exit 0
+          git push
