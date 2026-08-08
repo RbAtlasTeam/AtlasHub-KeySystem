@@ -22,6 +22,7 @@ jobs:
           KEY="ATLAS-$PART1-$PART2"
 
           echo "return \"$KEY\"" > key.txt
+          echo "KEY=$KEY" >> "$GITHUB_ENV"
 
       - name: Save Key
         run: |
@@ -30,3 +31,11 @@ jobs:
           git add key.txt
           git commit -m "Update daily key" || exit 0
           git push
+
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.ATLASHUB_KEYSYSTEM }}
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"embeds\":[{\"title\":\"AtlasHub Key\",\"description\":\"Key: \`$KEY\`\",\"color\":3447003}]}" \
+            "$DISCORD_WEBHOOK"
