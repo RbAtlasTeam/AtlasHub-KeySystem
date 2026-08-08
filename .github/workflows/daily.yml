@@ -17,8 +17,11 @@ jobs:
 
       - name: Generate Key
         run: |
-          KEY="ATLAS-$(openssl rand -hex 6 | tr '[:lower:]' '[:upper:]')"
-          echo "$KEY" > key.txt
+          PART1=$(printf "%04d" $((RANDOM % 10000)))
+          PART2=$(printf "%04d" $((RANDOM % 10000)))
+          KEY="ATLAS-$PART1-$PART2"
+
+          echo "return \"$KEY\"" > key.txt
 
       - name: Save Key
         run: |
